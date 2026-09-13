@@ -1,0 +1,56 @@
+name: Build 4R022 FlashBang
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform_tag: windows
+          - os: macos-latest
+            platform_tag: macos
+          - os: ubuntu-latest
+            platform_tag: linux
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Kodu çek / Checkout code
+        uses: actions/checkout@v4
+
+      - name: Python kur / Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Linux sistem bağımlılıkları / Linux system dependencies
+        if: matrix.platform_tag == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxcb-cursor0 libegl1 zip
+
+      - name: Derle (macOS/Linux) / Build (macOS/Linux)
+        if: matrix.platform_tag != 'windows'
+        run: |
+          chmod +x Build/build.sh
+          ./Build/build.sh
+
+      - name: Derle (Windows) / Build (Windows)
+        if: matrix.platform_tag == 'windows'
+        shell: cmd
+        run: Build\build.bat
+
+      - name: Paketleri yükle / Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: 4R022-FlashBang-${{ matrix.platform_tag }}
+          path: Build/dist_packages/*.zip
+          if-no-files-found: error
