@@ -1,0 +1,28 @@
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# PyInstaller
+_pyi_workcache/
+dist/
+Build/dist_packages/
+*.spec.bak
+
+# Sanal ortamlar / virtual envs
+venv/
+.venv/
+env/
+Build/.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Kullanıcı ayar dosyaları (test sırasında oluşabilir)
+config.json
+config.json.bak
